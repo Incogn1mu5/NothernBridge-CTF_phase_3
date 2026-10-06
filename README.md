@@ -9,13 +9,13 @@
 ### About This Project
 
 A fictional college web portal built as a beginner-friendly Capture The Flag (CTF) lab developed as part of an internship with **&lt;/Hacker4Help&gt;**, a company focused on Offensive & Defensive security training. This repository: Northenbridge-College-CTF lab — showcases hands-on
-work done on this initial version of CTF Lab during the internship.
+work done on the second version of CTF Lab during the internship.
 
 **Company:**[&lt;/Hacker4Help&gt;](https://hacker4help.com)
 
 ---
 
-The project combines a simple student portal with an intentionally vulnerable administrative portal. Players are expected to explore the application, follow clues, discover hidden functionality, and eventually modify their own academic record to find final secrete flag and complete the challenge.
+The project combines a simple student portal with an intentionally vulnerable administrative portal. Players are expected to explore the application, follow clues, discover hidden functionality, and eventually dump database and follow clue to find final secrete flag and complete the challenge.
 
 > [!CAUTION]
 > This project is an intentionally vulnerable Capture The Flag (CTF) educational sandbox. The code, architecture and configurations within this repository are designed specifically for security training and **doesn't** reflect the production engineering or security standards of **<a href="https://github.com/hacker4help">&lt;/Hacker4Help&gt;</a>** team.  Do not deploy this on an untrusted or public network.
@@ -178,10 +178,6 @@ The project uses shared folders so that the web application can be edited direct
 ### Student Marks
 
 <img width="2235" height="865" alt="PwnAD_Banner" src="https://github.com/Incogn1mu5/Northenbridge-College-CTF/blob/9ce116be7239ff602a58199404a981ab9af41beb/Screenshots/Northenvridge-Student-Exam-Result_page.png" />
-
-### Admin Dashboard
-
-<img width="2235" height="865" alt="PwnAD_Banner" src="https://github.com/Incogn1mu5/Northenbridge-College-CTF/blob/9ce116be7239ff602a58199404a981ab9af41beb/Screenshots/Northenvridge-Admin-Dashborad_page.png" />
 
 ---
 
