@@ -52,6 +52,7 @@ Dump full database using SQLi
       ▼
 Follow compliance notes clue to find final flag
 ```
+</br>  
 
 ## 2. Player Starting Point
 
@@ -60,7 +61,8 @@ Follow compliance notes clue to find final flag
 2. Primary student functionality: registration, login, profile,
    examination marks.
 3. The administration portal is deliberately absent from normal
-   student navigation.
+   student navigation.  
+</br>
 
 ## 3. Exercise Stages & Flags (authoritative table)
 
@@ -76,7 +78,8 @@ Follow compliance notes clue to find final flag
 The final (stage 6) flag is created by `infra/provision.sh` with a
 random token per deployment, stored `root:www-data` mode `0640`. The
 literal value never appears in Git or in any database table (`Flag_04`
-was removed from the `flags` table for this reason).
+was removed from the `flags` table for this reason).  
+</br>  
 
 ## 4. Stage-by-Stage Design
 
@@ -341,7 +344,8 @@ disclosure. Remediation: allowlist file paths, never let user input
 determine arbitrary filesystem paths, enforce least-privilege
 filesystem permissions, keep sensitive files outside web-accessible
 directories, and apply the same parameterization discipline to *every*
-query branch, not just some.
+query branch, not just some.  
+</br>  
 
 ## 5. Complete Challenge Chain
 
@@ -421,7 +425,8 @@ query branch, not just some.
 ## 6. Database Schema (tables involved)
 
 `students`, `courses`, `marks`, `faculty`, `compliance_notes`,
-`admins`, `flags`.
+`admins`, `flags`.  
+</br>
 
 ## 7. Anti-Cheat / Design Constraints
 
@@ -433,7 +438,8 @@ query branch, not just some.
   never served.
 - No host-OS, Vagrant, or VirtualBox exploitation, SSH attacks, real
   credentials, real student data, persistence, or lateral movement are
-  part of the intended solution path.
+  part of the intended solution path.  
+</br>
 
 ## 8. Intended Learning Outcomes
 
