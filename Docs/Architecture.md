@@ -410,7 +410,7 @@ The provisioning process:
 
 The seed file provides the fictional students, marks, administrator account, and the in-application CTF flags.
 
-The **final** flag is deliberately placed outside the database by the provisioning script, at `/opt/northbridge/flag.txt`.  
+The **final** flag is deliberately placed outside the database by the provisioning script, at `/opt/northenbridge/flag.txt`.  
 </br>  
 
 ## 11. Application Data Flow
