@@ -218,7 +218,7 @@ Windows host
 
 
 
-The `www` directory in the repository is the portal application source (the "northbridge-portal" content). At runtime it is served from `/var/www/html` inside the VM and is fully independent of the host filesystem — host edits only reach the VM if development mode is enabled before deploying lab.  
+The `www` directory in the repository is the portal application source (the "northenbridge-portal" content). At runtime it is served from `/var/www/html` inside the VM and is fully independent of the host filesystem — host edits only reach the VM if development mode is enabled before deploying lab.  
 </br>
 
 ## 6. Web Server
