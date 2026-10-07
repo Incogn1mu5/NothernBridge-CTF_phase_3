@@ -48,7 +48,7 @@ From a **clean clone** on any host:
 
 ```bash
 git clone <repository-url>
-cd Northenbridge-College-CTF
+cd enbridge-College-CTF
 vagrant up
 ```
 
@@ -67,7 +67,7 @@ The portal application is never read from the host at runtime — it is cloned i
 The script is fully declarative. The configuration variables live at the top of the file:
 
 ```bash
-PORTAL_REPO="https://github.com/Incogn1mu5/Northenbridge-College-CTF.git"  # GitHub URL of the portal source
+PORTAL_REPO="https://github.com/Incogn1mu5/enbridge-College-CTF.git"  # GitHub URL of the portal source
 PORTAL_BRANCH="main"                                                       # branch / tag to deploy
 PORTAL_SUBDIR="www"                                                        # app directory inside the repo
 PORTAL_SEED="seed.sql"                                                     # seed file inside the repo
@@ -77,9 +77,9 @@ PORTAL_DIR="/var/www/html"                                                 # VM-
 Steps performed:
 
 1. Updates packages and installs `apache2`, `php`, `libapache2-mod-php`, `php-sqlite3`, `sqlite3`, `git`, `curl`, `rsync`.
-2. Clones (or pulls) `PORTAL_REPO` at `PORTAL_BRANCH` into `/opt/northbridge-src`.
+2. Clones (or pulls) `PORTAL_REPO` at `PORTAL_BRANCH` into `/opt/northenbridge-src`.
 3. Installs the app from `PORTAL_SUBDIR` into `PORTAL_DIR` — the `database/` directory is excluded from the sync.
-4. Enables Apache modules (`rewrite`, `php`), writes the `northbridge` virtual host pointing at `PORTAL_DIR` with custom `ErrorDocument` directives (`404.html` / `500.html`), disables directory listing, blocks direct `*.db` serving, denies direct access to `PORTAL_DIR/includes`, and applies production PHP settings (display errors off, logging on).
+4. Enables Apache modules (`rewrite`, `php`), writes the `northenbridge` virtual host pointing at `PORTAL_DIR` with custom `ErrorDocument` directives (`404.html` / `500.html`), disables directory listing, blocks direct `*.db` serving, denies direct access to `PORTAL_DIR/includes`, and applies production PHP settings (display errors off, logging on).
    The app's `.htaccess` (deployed with the portal) maps `/profile` and `/marks` to their `.php` pages (so unauthenticated requests there redirect to login) and funnels unknown routes through the branded 404 page.
 
 The same variables can be overridden from the host shell before `vagrant provision`, which is how a lab operator deploys a custom portal fork (for example a local git-over-HTTP mirror) without editing the script:
@@ -89,7 +89,7 @@ $env:PORTAL_REPO = "http://10.0.2.2:9418/mirror"
 vagrant provision
 ```
 5. Places the decoy credential file (`PORTAL_DIR/.env`) used by the password-spray stage.
-6. Places the final flag on the filesystem at `/opt/northbridge/flag.txt` (outside the database); the legacy `flag-final.txt` path is removed.
+6. Places the final flag on the filesystem at `/opt/northenbridge/flag.txt` (outside the database); the legacy `flag-final.txt` path is removed.
 7. **Idempotently** initializes the SQLite database from `PORTAL_SEED`. The seed is re-applied on every provision using `CREATE IF NOT EXISTS` / `INSERT OR IGNORE` (plus a small migration block), so existing player rows are never overwritten.
 8. Sets permissions (`www-data`), restarts Apache and verifies the site answers HTTP 200 on `127.0.0.1:80`.  
 </br>
@@ -116,7 +116,7 @@ The VM listens on two interfaces:
 
 ## Apache
 
-Apache listens on port `80` inside the VM. The project uses the `northbridge` Apache virtual host and serves the application from:
+Apache listens on port `80` inside the VM. The project uses the `northenbridge` Apache virtual host and serves the application from:
 
 ```text
 /var/www/html
@@ -156,7 +156,7 @@ Deployed by the provisioning script, never committed to the repository:
 |---|---|---|
 | SQLite database | `/var/lib/northenbridge/college.db` | application data, built from `seed.sql` |
 | Decoy credential file | `/var/www/html/.env` | candidate admin passwords for the spray stage |
-| Final flag | `/opt/northbridge/flag.txt` | filesystem flag — **not** in the database |
+| Final flag | `/opt/northenbridge/flag.txt` | filesystem flag — **not** in the database |
 </br>
 
 ## Resetting the Lab
