@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-The Northernbridge College CTF is a progressive investigation through a
+The Northenbridge College CTF is a progressive investigation through a
 fictional college portal. The player starts as a normal student and
 gradually discovers weaknesses in the portal, with each stage teaching
 one concept at a time.
@@ -56,7 +56,7 @@ Follow compliance notes clue to find final flag
 
 ## 2. Player Starting Point
 
-1. Player starts at the public Northernbridge College homepage,
+1. Player starts at the public Northenbridge College homepage,
    presented as a normal fictional college portal.
 2. Primary student functionality: registration, login, profile,
    examination marks.
@@ -72,8 +72,8 @@ Follow compliance notes clue to find final flag
 | 2 | Password spraying | Decoy `/var/www/html/.env` with 12 fictional `username:password` pairs; only `helen.carter:Winter2026!` is valid | (evidence = login + Apache access log) | — |
 | 3 | Access admin dashboard | `/admin/dashboard.php` | `Flag{Logged_in_as_Admin}` | On the admin dashboard |
 | 4 | Restricted clerk view | `www/admin/edit-marks.php`, default (no-search) view, scoped to admin's own department via `NB-%` + `:department` | `Flag{Explored_Limited_Records}` | Under the restricted student-record view |
-| 5 | Database exfiltration | SQL injection via `search=` on `edit-marks.php` → dump all tables → read the compliance note | Clue pointing to `/opt/northbridge/flag.txt` | In the search field, parameter `search=` |
-| 6 | Final flag | Local File Inclusion via `id=` on `edit-marks.php` | `NCC{...}` | Filesystem `/opt/northbridge/flag.txt`, **not** in the database |
+| 5 | Database exfiltration | SQL injection via `search=` on `edit-marks.php` → dump all tables → read the compliance note | Clue pointing to `/opt/northenbridge/flag.txt` | In the search field, parameter `search=` |
+| 6 | Final flag | Local File Inclusion via `id=` on `edit-marks.php` | `NCC{...}` | Filesystem `/opt/northenbridge/flag.txt`, **not** in the database |
 
 The final (stage 6) flag is created by `infra/provision.sh` with a
 random token per deployment, stored `root:www-data` mode `0640`. The
@@ -134,7 +134,7 @@ to authenticate.
   wouldn't match it). Returns HTTP 200, not blocked.
 - **LAB ONLY — no throttling:** no lockout/rate-limit/CAPTCHA by
   design. Every spray attempt is one line in the Apache access log
-  (`northbridge_access.log`).
+  (`northenbridge_access.log`).
 
 **Lesson:** A `.env` file is not an access-control mechanism and must
 not be publicly accessible.
@@ -271,7 +271,7 @@ the clue to the final flag.
   `students`, `courses`, `marks`, `faculty`, `compliance_notes`,
   `admins`, `flags`.
 - `compliance_notes` contains the bridging hint:
-  > Full audit log archived at `/opt/northbridge/flag.txt`
+  > Full audit log archived at `/opt/northenbridge/flag.txt`
 - This hint is the bridge from the database dump to the Stage 6
   filesystem flag.
 
@@ -284,10 +284,10 @@ class (here, LFI) further down the chain.
 ### Stage 6 — Final Flag via LFI (`id=`)
 
 **Objective:** Exploit the Local File Inclusion on `id=` to read
-`/opt/northbridge/flag.txt` and obtain the final flag.
+`/opt/northenbridge/flag.txt` and obtain the final flag.
 
 **Flow:**
-- Player supplies the path found in Stage 5 as `?id=/opt/northbridge/flag.txt`.
+- Player supplies the path found in Stage 5 as `?id=/opt/northenbridge/flag.txt`.
 - **Flag 4 / final flag** (`NCC{...}`) is returned.
 
 **Technical implementation — the LFI branch, and `id`'s dual purpose:**
@@ -351,7 +351,7 @@ query branch, not just some.
 
 ```
 ┌──────────────────────────────────────┐
-│ 1. Visit Northernbridge College      │
+│ 1. Visit Northenbridge College      │
 │    Website                           │
 └──────────────────┬───────────────────┘
                    ▼
