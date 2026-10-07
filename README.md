@@ -139,7 +139,8 @@ The project uses shared folders so that the web application can be edited direct
   │   ├── db.php                      
   │   ├── 404.html                    
   │   ├── 500.html                    
-  │   ├── .env                        
+  │   ├── .env
+  │   ├── .htaccess                   
   │   ├── admin/                      
   │   │   ├── index.php               
   │   │   ├── dashboard.php           
@@ -231,6 +232,8 @@ http://192.168.1.50/
 The exact IP will depend on the local network.
 
 ### Stop lab
+```powershell
+vagrant halt
 ```
 
 ### Start Lab in Development Mode
