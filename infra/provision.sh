@@ -1,26 +1,4 @@
 #!/bin/bash
-# ============================================================================
-#  Northenbridge College CTF — Provisioning-Only Build (Phase 3)
-# ----------------------------------------------------------------------------
-#  This single script builds the COMPLETE CTF inside a fresh Ubuntu VM.
-#  There are no Vagrant synced folders and no manual steps: the portal
-#  application is cloned from a GitHub repository into a VM-local path.
-#
-#  Reproducibility contract:
-#      git clone <this-repo> && vagrant up
-#  must produce an identical working lab on any host machine.
-#
-#  Configuration (edit the defaults below or export before running):
-#      PORTAL_REPO    GitHub URL of the portal application repository
-#      PORTAL_BRANCH  branch / tag to deploy
-#      PORTAL_SUBDIR  directory inside the repo that holds the web app
-#      PORTAL_SEED    seed SQL file (inside the repo) -> db source of truth
-#      PORTAL_DIR     VM-local path the app is served from
-#
-#  This script is idempotent: running `vagrant provision` again will not
-#  error out and will never wipe existing application / player data.
-# ============================================================================
-
 set -euo pipefail
 
 # ---------------------------------------------------------------------------
@@ -362,7 +340,53 @@ systemctl restart apache2
 
 sleep 2
 
-HTTP_CODE="$(curl -ksS -o /dev/null -w '%{http_code}' "http://${SITE_HOST}:${SITE_PORT}/" || true)"
+# ---------------------------------------------------------------------------
+# Discover VM adapter IPs (VirtualBox NAT + Bridged)
+# ---------------------------------------------------------------------------
+# VirtualBox's default NAT adapter always sits on 10.0.2.0/24
+# (the VM itself is normally 10.0.2.15, gateway 10.0.2.2).
+# Any other global IPv4 address is treated as the bridged adapter.
+discover_ips() {
+    NAT_IP=""
+    BRIDGE_IP=""
+    local first_ip=""
+    local ip
+
+    while IFS= read -r ip; do
+        [ -z "$ip" ] && continue
+        [ -z "$first_ip" ] && first_ip="$ip"
+
+        case "$ip" in
+            10.0.2.*)
+                [ -z "$NAT_IP" ] && NAT_IP="$ip"
+                ;;
+            *)
+                [ -z "$BRIDGE_IP" ] && BRIDGE_IP="$ip"
+                ;;
+        esac
+    done < <(ip -4 -o addr show scope global \
+                | awk '{gsub(/\/.*/,"",$4); print $4}')
+
+    # Fallback: if no 10.0.2.x address exists (custom NAT subnet),
+    # assume the first interface is the NAT adapter.
+    if [ -z "$NAT_IP" ] && [ -n "$first_ip" ]; then
+        NAT_IP="$first_ip"
+        [ "$BRIDGE_IP" = "$first_ip" ] && BRIDGE_IP=""
+    fi
+}
+
+# HTTP probe: returns the status code, or an empty string if no host.
+check_http() {
+    local host="$1"
+    [ -z "$host" ] && { echo ""; return; }
+    curl -ksS -o /dev/null -w '%{http_code}' \
+        "http://${host}:${SITE_PORT}/" 2>/dev/null || echo "ERR"
+}
+
+discover_ips
+
+NAT_CODE="$(check_http "$NAT_IP")"
+BRIDGE_CODE="$(check_http "$BRIDGE_IP")"
 
 echo "======================================"
 echo " Provisioning complete!"
@@ -371,10 +395,34 @@ echo "  Portal source  : $PORTAL_DIR"
 echo "  Database       : $DB_PATH"
 echo "  Decoy .env     : $DECOY_ENV"
 echo "  Final flag     : $FLAG_FILE"
-echo "  Site check     : http://$SITE_HOST:$SITE_PORT/  ->  HTTP $HTTP_CODE"
+echo
 
-if [ "$HTTP_CODE" != "200" ]; then
-    echo "ERROR: site did not respond with HTTP 200." >&2
+if [ -n "$NAT_IP" ]; then
+    echo "  [NAT adapter]      http://$NAT_IP:$SITE_PORT/    ->  HTTP ${NAT_CODE:-n/a}"
+    echo "                     This site is ONLY accessible from inside the VirtualBox VM."
+    echo "                     The host machine will NOT be able to reach this address"
+    echo "                     until a port-forward is configured in the Vagrantfile."
+else
+    echo "  [NAT adapter]      not detected."
+fi
+
+echo
+
+if [ -n "$BRIDGE_IP" ]; then
+    echo "  [Bridged adapter]  http://$BRIDGE_IP:$SITE_PORT/    ->  HTTP ${BRIDGE_CODE:-n/a}"
+    echo "                     This site can be reached by anyone connected to the same"
+    echo "                     router / local network as this VM."
+else
+    echo "  [Bridged adapter]  not detected."
+fi
+
+echo
+
+# The lab is considered healthy if at least one adapter serves HTTP 200.
+if [ "$NAT_CODE" != "200" ] && [ "$BRIDGE_CODE" != "200" ]; then
+    echo "ERROR: site did not respond with HTTP 200 on any interface." >&2
+    echo "       NAT    : $NAT_IP    (HTTP ${NAT_CODE:-n/a})" >&2
+    echo "       BRIDGE : $BRIDGE_IP (HTTP ${BRIDGE_CODE:-n/a})" >&2
     exit 1
 fi
 
